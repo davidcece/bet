@@ -16,7 +16,7 @@ public class ScratchGame {
 
     public ScratchGame(Config config) {
         this.config = config;
-        this.random = new Random(978567354);
+        this.random = new Random();
         this.matrix = new String[config.getRows()][config.getColumns()];
         this.appliedWinningCombinations = new HashMap<>();
     }
@@ -54,6 +54,8 @@ public class ScratchGame {
             }
         }
 
+        double reward = Math.round(gameResult.getReward()/100.0) * 100.0;
+        gameResult.setReward(reward);
         return gameResult;
     }
 
@@ -126,7 +128,7 @@ public class ScratchGame {
 
     private void getLinearSymbolMultipliers() {
         Map<String, WinCombination> linearSymbols = config.getWinCombinations().entrySet().stream()
-                .filter(s -> s.getValue().getGroup().equalsIgnoreCase("linear_symbols"))
+                .filter(s -> s.getValue().getWhen().equalsIgnoreCase("linear_symbols"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         linearSymbols.forEach(this::getLinearSymbolMultiplier);
     }
