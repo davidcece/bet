@@ -3,8 +3,8 @@ package com.cece.scratch.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class GameResult {
@@ -12,7 +12,7 @@ public class GameResult {
     private double reward;
 
     @JsonProperty("applied_winning_combinations")
-    private Map<String, List<String>> appliedWinningCombinations;
+    private Map<String, Set<String>> appliedWinningCombinations;
 
     @JsonProperty("applied_bonus_symbol")
     private String appliedBonusSymbol;

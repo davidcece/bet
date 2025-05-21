@@ -11,7 +11,7 @@ public class ScratchGame {
     private final Config config;
     private final Random random;
     private final String[][] matrix;
-    private final Map<String, List<String>> appliedWinningCombinations;
+    private final Map<String, Set<String>> appliedWinningCombinations;
     private String appliedBonusSymbol;
 
     public ScratchGame(Config config) {
@@ -19,10 +19,19 @@ public class ScratchGame {
         this.random = new Random();
         this.matrix = new String[config.getRows()][config.getColumns()];
         this.appliedWinningCombinations = new HashMap<>();
+        initializeMatrix();
     }
 
+    public ScratchGame(Config config, String[][] testMatrix) {
+        this.config = config;
+        this.matrix = testMatrix;
+        this.random = new Random();
+        this.appliedWinningCombinations = new HashMap<>();
+        this.appliedBonusSymbol = getAppliedBonusSymbolFromMatrix();
+    }
+
+
     public GameResult placeBet(double amount) {
-        initializeMatrix();
         getCountMultiplier();
         getLinearSymbolMultipliers();
 
@@ -36,7 +45,7 @@ public class ScratchGame {
             String symbol = entry.getKey();
             Double multiplier = config.getSymbols().get(symbol).getRewardMultiplier();
 
-            List<String> winCombinationNames = entry.getValue();
+            Set<String> winCombinationNames = entry.getValue();
             for (String winCombinationName : winCombinationNames) {
                 WinCombination winCombination = config.getWinCombinations().get(winCombinationName);
                 multiplier *= winCombination.getRewardMultiplier();
@@ -119,7 +128,7 @@ public class ScratchGame {
                 String symbol = symbolCountEntry.getKey();
                 int symbolCount = symbolCountEntry.getValue();
                 if (symbolCount == count) {
-                    appliedWinningCombinations.putIfAbsent(symbol, new ArrayList<>());
+                    appliedWinningCombinations.putIfAbsent(symbol, new HashSet<>());
                     appliedWinningCombinations.get(symbol).add(winCombinationName);
                 }
             }
@@ -149,10 +158,24 @@ public class ScratchGame {
                 }
             }
             if (!symbol.isEmpty()) {
-                appliedWinningCombinations.putIfAbsent(symbol, new ArrayList<>());
+                appliedWinningCombinations.putIfAbsent(symbol, new HashSet<>());
                 appliedWinningCombinations.get(symbol).add(name);
             }
         }
+    }
+
+    private String getAppliedBonusSymbolFromMatrix(){
+        for(int i = 0; i < config.getRows(); i++) {
+            for (int j = 0; j < config.getColumns(); j++) {
+                String symbol = matrix[i][j];
+                String type = config.getSymbols().get(symbol).getType();
+                if("bonus".equalsIgnoreCase(type)){
+                    return symbol;
+                }
+            }
+        }
+
+        return null;
     }
 
 }
